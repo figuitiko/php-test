@@ -2,7 +2,7 @@
 
 class Database
 {
-    private static $database_name = 'test_php';
+    private static $database_name = 'php_server';
     private static $database_host = 'localhost';
     private static $database_user = 'root';
     private static $database_user_password = '';

@@ -30,6 +30,7 @@ class ConnectApi{
 
             echo json_encode($json);
         }
+
         else{
 
             $phone_books = PhoneBook::getInstance();
@@ -43,34 +44,40 @@ class ConnectApi{
     }
     public function isPostRequest(){
 
+        $tmp_img = $_FILES["user_image"]["tmp_name"];
+        $img_name = $_FILES["user_image"]["name"];
+        $upload_dir = "./images/".$img_name;
+
         $data = json_decode( file_get_contents( 'php://input' ), true );
-
-
 
         $first_name = $data['first_name'];
         $surname = $data['surname'];
-        $email = $data['email'];
+        $emails = $data['emails'];
         $phones = $data['phones'];
-//            echo $phones; exit;
-//            var_dump($phones);
+
+
 
         $phone_book = PhoneBook::getInstance();
-        $json = $phone_book->addSinglePhoneBook($first_name, $surname, $email,$phones);
+        $json = $phone_book->addSinglePhoneBook($first_name, $surname, $emails,$phones,$tmp_img, $upload_dir);
         echo json_encode($json);
 
     }
     public function isPutRequest(){
 
+        $tmp_img = $_FILES["user_image"]["tmp_name"];
+        $img_name = $_FILES["user_image"]["name"];
+        $upload_dir = !empty($img_name) ?"./images/".$img_name: '';
+
         $data = json_decode( file_get_contents( 'php://input' ), true );
 
-        $id = $data['idphone_book'];
+        $id = $data['id'];
         $first_name = $data['first_name'];
         $surname = $data['surname'];
-        $email = $data['email'];
+        $emails = $data['emails'];
         $phones = $data['phones'];
 
         $phone_book = PhoneBook::getInstance();
-        $json = $phone_book->updateSinglePhoneBook($id,$first_name, $surname, $email, $phones);
+        $json = $phone_book->updateSinglePhoneBook($id,$first_name, $surname, $emails, $phones, $tmp_img, $upload_dir);
         echo json_encode($json);
     }
     public function  isDeleteRequest(){
@@ -92,7 +99,7 @@ class ConnectApi{
         if($_SERVER['REQUEST_METHOD']=="GET"){
             $this->isGetRequest();
         }
-        if($_SERVER['REQUEST_METHOD']=="POST"){
+        if(($_SERVER['REQUEST_METHOD']=="POST" && is_uploaded_file($_FILES["user_image"]["tmp_name"])) || ($_SERVER['REQUEST_METHOD']=="POST")){
             $this->isPostRequest();
         }
         if($_SERVER['REQUEST_METHOD']=="PUT"){
